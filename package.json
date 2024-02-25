@@ -1,0 +1,94 @@
+{
+  "name": "swap-tsconfig",
+  "displayName": "Swap Tsconfig",
+  "version": "0.0.1",
+  "description": "Command to swap between multiple Typescript configuration files",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "typescript",
+    "tsconfig"
+  ],
+  "homepage": "https://github.com/harrydowning/swap-tsconfig#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harrydowning/swap-tsconfig.git"
+  },
+  "author": {
+    "name": "Harry Downing",
+    "email": "harry.downing17@gmail.com"
+  },
+  "publisher": "harrydowning",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "compile": "webpack",
+    "compile:tests": "rm -rf out && tsc -p . --outDir out",
+    "format": "prettier . --check",
+    "lint": "eslint src --ext ts",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "sort": "sort-package-json",
+    "test": "yarn compile:tests && vscode-test"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "swap-tsconfig",
+        "title": "Swap Tsconifg"
+      }
+    ],
+    "configuration": {
+      "title": "Swap Tsconfig",
+      "properties": {
+        "swap-tsconfig.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "node_modules/**"
+          ],
+          "description": "Glob patterns used for ignoring tsconfig files"
+        },
+        "swap-tsconfig.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/tsconfig*.json"
+          ],
+          "description": "Glob patterns used for finding tsconfig files"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "glob": "^10.3.10"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.20",
+    "@types/vscode": "^1.86.0",
+    "@types/webpack": "^5.28.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "sort-package-json": "^2.7.0",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "packageManager": "yarn@4.0.2",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "icon": "assets/icon.png"
+}
