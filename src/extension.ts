@@ -39,6 +39,7 @@ const swapTsconfig = commandWrapper(async () => {
   }
 
   workspaceState.currentTsconfigFile = selectedTsconfigFile;
+  vscode.window.showInformationMessage(`${selectedTsconfigFile} now active.`);
 });
 
 export const activate = (context: vscode.ExtensionContext) => {
