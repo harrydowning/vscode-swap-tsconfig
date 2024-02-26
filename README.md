@@ -1,4 +1,6 @@
-# ![Swap Tsconfig](https://raw.githubusercontent.com/harrydowning/swap-tsconfig/main/assets/banner.png)
+<h1 style="text-align: center;">
+  <img src="https://raw.githubusercontent.com/harrydowning/swap-tsconfig/main/assets/banner.png" alt="Swap Tsconfig">
+</h1>
 
 <!-- ![GitHub License](https://img.shields.io/github/license/harrydowning/swap-tsconfig)
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/harrydowning.swap-tsconfig)

@@ -46,7 +46,7 @@
             "type": "string"
           },
           "default": [
-            "node_modules/**"
+            "**/node_modules/**"
           ],
           "description": "Glob patterns used for ignoring tsconfig files"
         },
@@ -56,7 +56,7 @@
             "type": "string"
           },
           "default": [
-            "**/tsconfig*.json"
+            "**/*tsconfig*.json"
           ],
           "description": "Glob patterns used for finding tsconfig files"
         }
