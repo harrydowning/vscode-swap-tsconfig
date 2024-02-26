@@ -1,7 +1,7 @@
 {
   "name": "swap-tsconfig",
   "displayName": "Swap Tsconfig",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Command to swap between multiple Typescript configuration files",
   "categories": [
     "Other"
