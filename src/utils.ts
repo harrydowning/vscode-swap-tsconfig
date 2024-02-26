@@ -15,7 +15,7 @@ export const commandWrapper = (command: () => Promise<void> | void) => {
       if (error instanceof ExtensionError) {
         vscode.window.showErrorMessage(error.message);
       } else if (error instanceof Error) {
-        vscode.window.showErrorMessage("An error has occurred");
+        vscode.window.showErrorMessage("An error has occurred.");
         console.error(error);
       }
     }
@@ -33,7 +33,7 @@ export const getWorkspaceFolder = async () => {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
   if (!workspaceFolders) {
-    throw new FatalExtensionError("Open a workspace to swap tsconfig");
+    throw new FatalExtensionError("Open a workspace to swap tsconfig.");
   } else if (workspaceFolders.length === 1) {
     return workspaceFolders[0];
   } else {
@@ -44,11 +44,19 @@ export const getWorkspaceFolder = async () => {
 
 export const getTsconfigFiles = (path: string) => {
   const getPatternPath = (pattern: string) => posix.join(path, pattern);
-  const config = vscode.workspace.getConfiguration("swap-tsconfig");
-  const include = config.include.map(getPatternPath);
-  const exclude = config.exclude.map(getPatternPath);
+  const settings = vscode.workspace.getConfiguration("swap-tsconfig");
+  const include = settings.include.map(getPatternPath);
+  const exclude = settings.exclude.map(getPatternPath);
 
-  return globSync(include, { ignore: exclude })
+  const tsconfigFiles = globSync(include, { ignore: exclude })
     .map((tsconfigFile) => posix.relative(path, tsconfigFile))
     .sort((a, b) => a.length - b.length);
+
+  if (!tsconfigFiles.length) {
+    throw new FatalExtensionError(
+      "No tsconfig files found. Ensure the 'exclude' and 'include' settings are correctly configured.",
+    );
+  }
+
+  return tsconfigFiles;
 };
