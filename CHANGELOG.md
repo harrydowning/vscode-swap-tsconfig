@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/), and this 
 
 - Error message when no tsconfig files found
 - Confirmation message after command
+- Shields in `README.md`
 
 ### Fixed
 
