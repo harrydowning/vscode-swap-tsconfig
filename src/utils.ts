@@ -54,7 +54,7 @@ export const getTsconfigFiles = (path: string) => {
 
   if (!tsconfigFiles.length) {
     throw new FatalExtensionError(
-      "No tsconfig files found. Ensure the 'exclude' and 'include' settings are correctly configured.",
+      "No tsconfig files found. Ensure the 'exclude' and 'include' settings for this extension are correctly configured.",
     );
   }
 

@@ -2,9 +2,9 @@
   <img src="https://raw.githubusercontent.com/harrydowning/swap-tsconfig/main/assets/banner.png" alt="Swap Tsconfig">
 </h1>
 
-<!-- ![GitHub License](https://img.shields.io/github/license/harrydowning/swap-tsconfig)
+![GitHub License](https://img.shields.io/github/license/harrydowning/swap-tsconfig)
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/harrydowning.swap-tsconfig)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/harrydowning.swap-tsconfig) -->
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/harrydowning.swap-tsconfig)
 
 ## Overview
 
