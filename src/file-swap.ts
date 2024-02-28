@@ -102,7 +102,7 @@ export class FileSwap {
       workspaceFolder,
       workspaceState,
     );
-    workspaceFileSwap.swap();
+    await workspaceFileSwap.swap();
   }
 
   restore() {
