@@ -8,9 +8,18 @@ import {
   getNonNullable,
   getTsconfigFiles,
 } from "./utils";
-import { WorkspaceStateMap } from "./workspace-state-map";
+import { SafeMap } from "./safe-map";
+import { FileCache } from "./file-cache";
 
-const workspaceStateMap = new WorkspaceStateMap();
+export type WorkspaceState = {
+  currentTsconfigFile: string;
+  baseTsconfigFileCache: FileCache;
+};
+
+const workspaceStateMap = new SafeMap<string, WorkspaceState>(() => ({
+  currentTsconfigFile: BASE_TSCONFIG_FILE,
+  baseTsconfigFileCache: new FileCache(),
+}));
 
 const swapTsconfig = commandWrapper(async () => {
   const workspaceFolder = await getWorkspaceFolder();
