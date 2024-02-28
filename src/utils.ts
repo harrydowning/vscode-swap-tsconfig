@@ -1,6 +1,4 @@
-import { posix } from "path";
 import * as vscode from "vscode";
-import { globSync } from "glob";
 import {
   ExtensionError,
   FatalExtensionError,
@@ -40,23 +38,4 @@ export const getWorkspaceFolder = async () => {
     const workspaceFolder = await vscode.window.showWorkspaceFolderPick();
     return getNonNullable(workspaceFolder);
   }
-};
-
-export const getTsconfigFiles = (path: string) => {
-  const getPatternPath = (pattern: string) => posix.join(path, pattern);
-  const settings = vscode.workspace.getConfiguration("swap-tsconfig");
-  const include = settings.include.map(getPatternPath);
-  const exclude = settings.exclude.map(getPatternPath);
-
-  const tsconfigFiles = globSync(include, { ignore: exclude })
-    .map((tsconfigFile) => posix.relative(path, tsconfigFile))
-    .sort((a, b) => a.length - b.length);
-
-  if (!tsconfigFiles.length) {
-    throw new FatalExtensionError(
-      "No tsconfig files found. Ensure the 'exclude' and 'include' settings for this extension are correctly configured.",
-    );
-  }
-
-  return tsconfigFiles;
 };

@@ -1,54 +1,23 @@
-import fs from "fs";
-import { posix } from "path";
 import * as vscode from "vscode";
 import { BASE_TSCONFIG_FILE } from "./constants";
-import {
-  commandWrapper,
-  getWorkspaceFolder,
-  getNonNullable,
-  getTsconfigFiles,
-} from "./utils";
+import { commandWrapper } from "./utils";
 import { SafeMap } from "./safe-map";
 import { FileCache } from "./file-cache";
+import { FileSwap, WorkspaceState } from "./file-swap";
 
-export type WorkspaceState = {
-  currentTsconfigFile: string;
-  baseTsconfigFileCache: FileCache;
-};
-
-const workspaceStateMap = new SafeMap<string, WorkspaceState>(() => ({
-  currentTsconfigFile: BASE_TSCONFIG_FILE,
-  baseTsconfigFileCache: new FileCache(),
+const tsconfigWorkspaceStateMap = new SafeMap<string, WorkspaceState>(() => ({
+  currentFile: BASE_TSCONFIG_FILE,
+  baseFileCache: new FileCache(),
 }));
 
 const swapTsconfig = commandWrapper(async () => {
-  const workspaceFolder = await getWorkspaceFolder();
-  const workspacePath = workspaceFolder.uri.fsPath;
-  const workspaceState = workspaceStateMap.get(workspaceFolder.name);
-
-  const tsconfigFiles = getTsconfigFiles(workspacePath);
-  const tsconfigItems = tsconfigFiles.map((tsconfigFile) => {
-    const isCurrent = tsconfigFile === workspaceState.currentTsconfigFile;
-    return { label: tsconfigFile, description: isCurrent ? "current" : "" };
-  });
-
-  const tsconfigItem = await vscode.window.showQuickPick(tsconfigItems);
-  const { label: selectedTsconfigFile } = getNonNullable(tsconfigItem);
-
-  const baseTsconfigPath = posix.join(workspacePath, BASE_TSCONFIG_FILE);
-  const selectedTsconfigPath = posix.join(workspacePath, selectedTsconfigFile);
-
-  if (selectedTsconfigFile === BASE_TSCONFIG_FILE) {
-    workspaceState.baseTsconfigFileCache.restore();
-  } else {
-    if (workspaceState.currentTsconfigFile === BASE_TSCONFIG_FILE) {
-      workspaceState.baseTsconfigFileCache.store(baseTsconfigPath);
-    }
-    fs.copyFileSync(selectedTsconfigPath, baseTsconfigPath);
-  }
-
-  workspaceState.currentTsconfigFile = selectedTsconfigFile;
-  vscode.window.showInformationMessage(`${selectedTsconfigFile} now active.`);
+  const { include, exclude } =
+    vscode.workspace.getConfiguration("swap-tsconfig");
+  const tsconfigFileSwap = new FileSwap(
+    { baseFile: BASE_TSCONFIG_FILE, include, exclude },
+    tsconfigWorkspaceStateMap,
+  );
+  tsconfigFileSwap.swap();
 });
 
 export const activate = (context: vscode.ExtensionContext) => {
@@ -58,7 +27,7 @@ export const activate = (context: vscode.ExtensionContext) => {
 };
 
 export const deactivate = () => {
-  for (const [, workspaceState] of workspaceStateMap) {
-    workspaceState.baseTsconfigFileCache.restore();
+  for (const [, workspaceState] of tsconfigWorkspaceStateMap) {
+    workspaceState.baseFileCache.restore();
   }
 };
