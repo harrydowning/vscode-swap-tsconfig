@@ -13,7 +13,7 @@ type FileSwapConfig = {
   exclude: string[];
 };
 
-export type WorkspaceState = {
+type WorkspaceState = {
   currentFile: string;
   baseFileCache: FileCache;
 };
@@ -35,8 +35,8 @@ class WorkspaceFileSwap {
     this.#workspaceState = workspaceState;
   }
 
-  #getWorkspacePath(pattern: string) {
-    return posix.join(this.#workspaceFolder.uri.fsPath, pattern);
+  #getWorkspacePath(path: string) {
+    return posix.join(this.#workspaceFolder.uri.fsPath, path);
   }
 
   #getFiles() {
@@ -86,9 +86,12 @@ export class FileSwap {
   #config: FileSwapConfig;
   #workspaceStateMap: WorkspaceStateMap;
 
-  constructor(config: FileSwapConfig, workspaceStateMap: WorkspaceStateMap) {
+  constructor(config: FileSwapConfig) {
     this.#config = config;
-    this.#workspaceStateMap = workspaceStateMap;
+    this.#workspaceStateMap = new SafeMap(() => ({
+      currentFile: config.baseFile,
+      baseFileCache: new FileCache(),
+    }));
   }
 
   async swap() {
@@ -99,6 +102,12 @@ export class FileSwap {
       workspaceFolder,
       workspaceState,
     );
-    await workspaceFileSwap.swap();
+    workspaceFileSwap.swap();
+  }
+
+  restore() {
+    for (const [, workspaceState] of this.#workspaceStateMap) {
+      workspaceState.baseFileCache.restore();
+    }
   }
 }

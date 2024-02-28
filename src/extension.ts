@@ -1,33 +1,23 @@
 import * as vscode from "vscode";
-import { BASE_TSCONFIG_FILE } from "./constants";
 import { commandWrapper } from "./utils";
-import { SafeMap } from "./safe-map";
-import { FileCache } from "./file-cache";
-import { FileSwap, WorkspaceState } from "./file-swap";
+import { FileSwap } from "./file-swap";
 
-const tsconfigWorkspaceStateMap = new SafeMap<string, WorkspaceState>(() => ({
-  currentFile: BASE_TSCONFIG_FILE,
-  baseFileCache: new FileCache(),
-}));
-
-const swapTsconfig = commandWrapper(async () => {
-  const { include, exclude } =
-    vscode.workspace.getConfiguration("swap-tsconfig");
-  const tsconfigFileSwap = new FileSwap(
-    { baseFile: BASE_TSCONFIG_FILE, include, exclude },
-    tsconfigWorkspaceStateMap,
-  );
-  tsconfigFileSwap.swap();
+const settings = vscode.workspace.getConfiguration("swap-tsconfig");
+const tsconfigFileSwap = new FileSwap({
+  baseFile: "tsconfig.json",
+  include: settings.include,
+  exclude: settings.exclude,
 });
 
 export const activate = (context: vscode.ExtensionContext) => {
-  context.subscriptions.push(
-    vscode.commands.registerCommand("swap-tsconfig", swapTsconfig),
+  const disposable = vscode.commands.registerCommand(
+    "swap-tsconfig",
+    commandWrapper(async () => tsconfigFileSwap.swap()),
   );
+
+  context.subscriptions.push(disposable);
 };
 
 export const deactivate = () => {
-  for (const [, workspaceState] of tsconfigWorkspaceStateMap) {
-    workspaceState.baseFileCache.restore();
-  }
+  tsconfigFileSwap.restore();
 };
