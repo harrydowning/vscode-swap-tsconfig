@@ -40,8 +40,8 @@ class WorkspaceFileSwap {
   }
 
   #getFiles() {
-    const include = this.#config.include.map(this.#getWorkspacePath);
-    const exclude = this.#config.exclude.map(this.#getWorkspacePath);
+    const include = this.#config.include.map(this.#getWorkspacePath, this);
+    const exclude = this.#config.exclude.map(this.#getWorkspacePath, this);
     const files = globSync(include, { ignore: exclude })
       .map((file) => posix.relative(this.#workspaceFolder.uri.fsPath, file))
       .sort((a, b) => a.length - b.length);
@@ -59,7 +59,7 @@ class WorkspaceFileSwap {
 
   async swap() {
     const files = this.#getFiles();
-    const fileItems = files.map(this.#getFileItem);
+    const fileItems = files.map(this.#getFileItem, this);
     const fileItem = await vscode.window.showQuickPick(fileItems);
     const { label: selectedFile } = getNonNullable(fileItem);
 
