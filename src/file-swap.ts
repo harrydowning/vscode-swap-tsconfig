@@ -1,10 +1,10 @@
 import fs from "fs";
+import { posix } from "path";
 import * as vscode from "vscode";
+import { globSync } from "glob";
 import { FileCache } from "./file-cache";
 import { SafeMap } from "./safe-map";
 import { getNonNullable, getWorkspaceFolder } from "./utils";
-import { posix } from "path";
-import { globSync } from "glob";
 import { FatalExtensionError } from "./extension-error";
 
 type FileSwapConfig = {
