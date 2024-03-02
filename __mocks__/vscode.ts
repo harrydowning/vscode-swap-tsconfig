@@ -1,5 +1,6 @@
 export const window = {
-  showWorkspaceFolderPick: () => {},
+  showErrorMessage: jest.fn(),
+  showWorkspaceFolderPick: jest.fn(),
 };
 
 export const workspace = {
