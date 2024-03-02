@@ -23,7 +23,7 @@ describe("utils", () => {
       expect(vscode.window.showErrorMessage).toHaveBeenCalledWith("");
     });
 
-    it("should show a generic error message and log on any other Error", () => {
+    it("should show a generic error message and log to console on any other Error", () => {
       const error = new Error();
       const consoleErrorSpy = jest.spyOn(console, "error");
       commandWrapper(() => {
@@ -73,7 +73,7 @@ describe("utils", () => {
       ]);
 
       jest
-        .spyOn(vscode.window, "showWorkspaceFolderPick")
+        .mocked(vscode.window.showWorkspaceFolderPick)
         .mockImplementation(async () => mockWorkspaceFolder);
 
       expect(await getWorkspaceFolder()).toBe(mockWorkspaceFolder);
