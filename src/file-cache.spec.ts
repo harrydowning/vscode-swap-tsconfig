@@ -47,7 +47,7 @@ describe("file-cache", () => {
     expect(writeFileSyncSpy).toHaveBeenCalledTimes(0);
   });
 
-  it("correctly restores when storing another file", () => {
+  it("correctly restores its cached file when storing another file", () => {
     existsSyncSpy.mockImplementationOnce(() => true);
     readFileSyncSpy.mockImplementationOnce(() => mockData);
 
