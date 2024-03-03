@@ -4,9 +4,6 @@ import { FileSwap } from "./file-swap";
 
 jest.mock("./file-swap");
 
-const swapSpy = jest.spyOn(FileSwap.prototype, "swap");
-const restoreSpy = jest.spyOn(FileSwap.prototype, "restore");
-
 describe("extension", () => {
   const mockContext = {
     subscriptions: [],
@@ -27,14 +24,14 @@ describe("extension", () => {
         .mock.calls[0][1];
 
       registeredCommand();
-      expect(swapSpy).toHaveBeenCalledTimes(1);
+      expect(FileSwap.prototype.swap).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("deactivate", () => {
     it("should restore the file swap", () => {
       deactivate();
-      expect(restoreSpy).toHaveBeenCalledTimes(1);
+      expect(FileSwap.prototype.restore).toHaveBeenCalledTimes(1);
     });
   });
 });
