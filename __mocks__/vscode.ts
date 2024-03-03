@@ -5,4 +5,12 @@ export const window = {
 
 export const workspace = {
   workspaceFolders: undefined,
+  getConfiguration: jest.fn(() => ({
+    include: [],
+    exclude: [],
+  })),
+};
+
+export const commands = {
+  registerCommand: jest.fn(),
 };
