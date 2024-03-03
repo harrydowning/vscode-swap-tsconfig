@@ -5,6 +5,7 @@ import * as utils from "./utils";
 import { FileCache } from "./file-cache";
 
 jest.mock("./workspace-file-swap");
+jest.mock("./file-cache");
 
 const getWorkspaceFolderSpy = jest.spyOn(utils, "getWorkspaceFolder");
 
@@ -15,7 +16,7 @@ const getMockWorkspaceFolder = (name: string) => {
 describe("file-swap", () => {
   const mockConfig = { baseFile: "baseFile", include: [], exclude: [] };
 
-  it("swaps file for selected workspace", async () => {
+  it("calls swap on a new WorkspaceFileSwap for the selected workspace", async () => {
     const mockWorkspaceFolder = getMockWorkspaceFolder("f1");
     getWorkspaceFolderSpy.mockImplementationOnce(
       async () => mockWorkspaceFolder,
@@ -28,13 +29,15 @@ describe("file-swap", () => {
     expect(WorkspaceFileSwap).toHaveBeenCalledWith(
       mockConfig,
       mockWorkspaceFolder,
-      { currentFile: mockConfig.baseFile, baseFileCache: new FileCache() },
+      {
+        currentFile: mockConfig.baseFile,
+        baseFileCache: expect.any(FileCache),
+      },
     );
     expect(WorkspaceFileSwap.prototype.swap).toHaveBeenCalledTimes(1);
   });
 
   it("restores file cache for all workspaces", async () => {
-    const restoreSpy = jest.spyOn(FileCache.prototype, "restore");
     getWorkspaceFolderSpy
       .mockImplementationOnce(async () => getMockWorkspaceFolder("f1"))
       .mockImplementationOnce(async () => getMockWorkspaceFolder("f2"))
@@ -48,6 +51,6 @@ describe("file-swap", () => {
     await fileSwap.swap();
     fileSwap.restore();
 
-    expect(restoreSpy).toHaveBeenCalledTimes(3);
+    expect(FileCache.prototype.restore).toHaveBeenCalledTimes(3);
   });
 });
