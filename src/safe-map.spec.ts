@@ -18,4 +18,14 @@ describe("safe-map", () => {
     expect(safeMap.get(key)).toEqual(existingValue);
     expect(valueFactorySpy).toHaveBeenCalledTimes(0);
   });
+
+  it("extends the inbuilt Map class", () => {
+    expect(new SafeMap(valueFactory)).toBeInstanceOf(Map);
+  });
+
+  it("can be pre-populated on construction", () => {
+    const entries: [string, string][] = [["key", "value"]];
+    const safeMap = new SafeMap(valueFactory, entries);
+    expect([...safeMap.entries()]).toStrictEqual(entries);
+  });
 });
