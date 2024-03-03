@@ -46,4 +46,38 @@ describe("file-cache", () => {
 
     expect(writeFileSyncSpy).toHaveBeenCalledTimes(0);
   });
+
+  it("correctly restores when storing another file", () => {
+    existsSyncSpy.mockImplementationOnce(() => true);
+    readFileSyncSpy.mockImplementationOnce(() => mockData);
+
+    const fileCache = new FileCache();
+    fileCache.store(mockPath);
+
+    const mockNewPath = "new path";
+    const mockNewData = Buffer.from("new data");
+    existsSyncSpy.mockImplementationOnce(() => true);
+    readFileSyncSpy.mockImplementationOnce(() => mockNewData);
+
+    fileCache.store(mockNewPath);
+
+    expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
+    expect(writeFileSyncSpy).toHaveBeenCalledWith(mockPath, mockData);
+    expect(existsSyncSpy).toHaveBeenCalledTimes(2);
+    expect(readFileSyncSpy).toHaveBeenCalledTimes(2);
+    expect(readFileSyncSpy).toHaveBeenNthCalledWith(2, mockNewPath);
+
+    fileCache.restore();
+
+    expect(writeFileSyncSpy).toHaveBeenCalledTimes(2);
+    expect(writeFileSyncSpy).toHaveBeenNthCalledWith(
+      2,
+      mockNewPath,
+      mockNewData,
+    );
+
+    fileCache.restore();
+
+    expect(writeFileSyncSpy).toHaveBeenCalledTimes(2);
+  });
 });
