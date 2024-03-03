@@ -74,7 +74,7 @@ describe("utils", () => {
 
       jest
         .mocked(vscode.window.showWorkspaceFolderPick)
-        .mockImplementation(async () => mockWorkspaceFolder);
+        .mockImplementationOnce(async () => mockWorkspaceFolder);
 
       expect(await getWorkspaceFolder()).toBe(mockWorkspaceFolder);
       expect(vscode.window.showWorkspaceFolderPick).toHaveBeenCalledTimes(1);

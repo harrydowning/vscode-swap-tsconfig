@@ -1,0 +1,34 @@
+import fs from "fs";
+import { FileCache } from "./file-cache";
+
+jest.mock("fs");
+
+const existsSyncSpy = jest.spyOn(fs, "existsSync");
+const readFileSyncSpy = jest.spyOn(fs, "readFileSync");
+const writeFileSyncSpy = jest.spyOn(fs, "writeFileSync");
+
+describe("file-cache", () => {
+  const mockPath = "path";
+  const mockData = Buffer.from("data");
+
+  it("correctly stores and restores a file that exists", () => {
+    existsSyncSpy.mockImplementationOnce(() => true);
+    readFileSyncSpy.mockImplementationOnce(() => mockData);
+
+    const fileCache = new FileCache();
+    fileCache.store(mockPath);
+
+    expect(existsSyncSpy).toHaveBeenCalledTimes(1);
+    expect(readFileSyncSpy).toHaveBeenCalledTimes(1);
+    expect(readFileSyncSpy).toHaveBeenCalledWith(mockPath);
+
+    fileCache.restore();
+
+    expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
+    expect(writeFileSyncSpy).toHaveBeenCalledWith(mockPath, mockData);
+
+    fileCache.restore();
+
+    expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
+  });
+});
