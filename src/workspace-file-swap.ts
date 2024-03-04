@@ -43,15 +43,22 @@ export class WorkspaceFileSwap {
       .map((file) => posix.relative(this.#workspaceFolder.uri.fsPath, file))
       .sort((a, b) => a.length - b.length);
 
+    const baseFileIndex = files.indexOf(this.#config.baseFile);
+    if (baseFileIndex >= 0) {
+      files.splice(baseFileIndex, 1);
+    }
+
     if (!files.length) {
       throw new FatalExtensionError("No files found.");
     }
-    return files;
+
+    return [this.#config.baseFile, ...files];
   }
 
   #getFileItem(file: string) {
-    const isCurrentFile = file === this.#workspaceState.currentFile;
-    return { label: file, description: isCurrentFile ? "current" : "" };
+    let tag = file === this.#config.baseFile ? "original" : "";
+    tag = file === this.#workspaceState.currentFile ? "current" : tag;
+    return { label: file, description: tag };
   }
 
   async swap() {
