@@ -1,3 +1,4 @@
+import fs from "fs";
 import { posix } from "path";
 import * as glob from "glob";
 import * as vscode from "vscode";
@@ -12,8 +13,11 @@ jest.mock("./file-cache");
 const globSyncSpy = jest.spyOn(glob, "globSync");
 
 const mockWorkspacePath = "/path";
-const getWorkspaceFiles = (files: string[]) => {
-  return files.map((file) => posix.join(mockWorkspacePath, file));
+const getMockWorkspacePath = (path: string) => {
+  return posix.join(mockWorkspacePath, path);
+};
+const getMockWorkspacePaths = (paths: string[]) => {
+  return paths.map(getMockWorkspacePath);
 };
 
 describe("workspace-file-swap", () => {
@@ -31,30 +35,53 @@ describe("workspace-file-swap", () => {
     };
   });
 
-  // it("correctly swaps the base file with the selected file", async () => {
-  //   const selectedFile = "selectedFile";
-  //   globSyncSpy.mockImplementationOnce(() =>
-  //     getWorkspaceFiles(["file", "baseFile", selectedFile]),
-  //   );
-  //   jest
-  //     .mocked(vscode.window.showQuickPick)
-  //     .mockImplementationOnce(async () => ({ label: selectedFile }));
+  it("correctly swaps the base file with the selected file", async () => {
+    const [mockFile, mockSelectedFile] = ["file", "selectedFile"];
+    const mockFiles = [mockFile, mockConfig.baseFile, mockSelectedFile];
+    globSyncSpy.mockImplementationOnce(() => getMockWorkspacePaths(mockFiles));
+    jest
+      .mocked(vscode.window.showQuickPick)
+      .mockImplementationOnce(async () => ({ label: mockSelectedFile }));
 
-  //   const workspaceFileSwap = new WorkspaceFileSwap(
-  //     mockConfig,
-  //     mockWorkspaceFolder,
-  //     mockWorkspaceState,
-  //   );
-  //   await workspaceFileSwap.swap();
+    const mockBaseFilePath = getMockWorkspacePath(mockConfig.baseFile);
+    const mockSelectedFilePath = getMockWorkspacePath(mockSelectedFile);
 
-  //   expect(glob.globSync).toHaveBeenCalledTimes(1);
-  //   expect(glob.globSync).toHaveBeenCalledWith(mockConfig.include, {
-  //     ignore: mockConfig.exclude,
-  //   });
+    const workspaceFileSwap = new WorkspaceFileSwap(
+      mockConfig,
+      mockWorkspaceFolder,
+      mockWorkspaceState,
+    );
+    await workspaceFileSwap.swap();
 
-  //   expect(vscode.window.showQuickPick).toHaveBeenCalledTimes(1);
-  //   expect(vscode.window.showQuickPick).toHaveBeenCalledWith();
-  // });
+    expect(glob.globSync).toHaveBeenCalledTimes(1);
+    expect(glob.globSync).toHaveBeenCalledWith(mockConfig.include, {
+      ignore: mockConfig.exclude,
+    });
+
+    expect(vscode.window.showQuickPick).toHaveBeenCalledTimes(1);
+    expect(vscode.window.showQuickPick).toHaveBeenCalledWith([
+      { label: mockConfig.baseFile, description: "current" },
+      { label: mockFile, description: "" },
+      { label: mockSelectedFile, description: "" },
+    ]);
+
+    expect(mockWorkspaceState.baseFileCache.restore).not.toHaveBeenCalled();
+    expect(mockWorkspaceState.baseFileCache.store).toHaveBeenCalledTimes(1);
+    expect(mockWorkspaceState.baseFileCache.store).toHaveBeenCalledWith(
+      mockBaseFilePath,
+    );
+    expect(fs.copyFileSync).toHaveBeenCalledTimes(1);
+    expect(fs.copyFileSync).toHaveBeenCalledWith(
+      mockSelectedFilePath,
+      mockBaseFilePath,
+    );
+
+    expect(mockWorkspaceState.currentFile).toBe(mockSelectedFile);
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledTimes(1);
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
+      `${mockSelectedFile} now active in ${mockWorkspaceFolder.name}.`,
+    );
+  });
 
   it("throws a FatalExtensionError when no files are found", async () => {
     globSyncSpy.mockImplementationOnce(() => []);
@@ -69,7 +96,7 @@ describe("workspace-file-swap", () => {
 
   it("throws a FatalExtensionError when only the base file is found", async () => {
     globSyncSpy.mockImplementationOnce(() =>
-      getWorkspaceFiles([mockConfig.baseFile]),
+      getMockWorkspacePaths([mockConfig.baseFile]),
     );
     const workspaceFileSwap = new WorkspaceFileSwap(
       mockConfig,
