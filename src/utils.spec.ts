@@ -34,6 +34,7 @@ describe("utils", () => {
       expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
         "An error has occurred.",
       );
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
       expect(consoleErrorSpy).toHaveBeenCalledWith(error);
     });
   });
@@ -51,13 +52,29 @@ describe("utils", () => {
   });
 
   describe("getWorkspaceFolder", () => {
+    const mockWorkspaceFolder = {} as vscode.WorkspaceFolder;
+
     it("throws FatalExtensionError when workspaceFolders is undefined", async () => {
       jest.replaceProperty(vscode.workspace, "workspaceFolders", undefined);
       await expect(getWorkspaceFolder()).rejects.toThrow(FatalExtensionError);
     });
 
+    it("throws NonFatalExtensionError when no workspace folder is selected", async () => {
+      jest.replaceProperty(vscode.workspace, "workspaceFolders", [
+        {} as vscode.WorkspaceFolder,
+        mockWorkspaceFolder,
+      ]);
+
+      jest
+        .mocked(vscode.window.showWorkspaceFolderPick)
+        .mockImplementationOnce(async () => undefined);
+
+      await expect(getWorkspaceFolder()).rejects.toThrow(
+        NonFatalExtensionError,
+      );
+    });
+
     it("returns the first workspace folder when there is only one", async () => {
-      const mockWorkspaceFolder = {} as vscode.WorkspaceFolder;
       jest.replaceProperty(vscode.workspace, "workspaceFolders", [
         mockWorkspaceFolder,
       ]);
@@ -66,7 +83,6 @@ describe("utils", () => {
     });
 
     it("returns the user's pick when there is multiple workspace folders", async () => {
-      const mockWorkspaceFolder = {} as vscode.WorkspaceFolder;
       jest.replaceProperty(vscode.workspace, "workspaceFolders", [
         {} as vscode.WorkspaceFolder,
         mockWorkspaceFolder,
