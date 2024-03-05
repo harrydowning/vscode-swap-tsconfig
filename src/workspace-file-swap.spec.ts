@@ -86,6 +86,36 @@ describe("workspace-file-swap", () => {
     );
   });
 
+  it("correctly restores the base file when selected", async () => {
+    const mockFile = "file";
+    const mockFiles = [mockFile, mockConfig.baseFile];
+    mockWorkspaceState.currentFile = mockFile;
+
+    const workspaceFileSwap = setup(mockFiles, mockConfig.baseFile);
+    await workspaceFileSwap.swap();
+
+    expect(glob.globSync).toHaveBeenCalledTimes(1);
+    expect(glob.globSync).toHaveBeenCalledWith(mockConfig.include, {
+      ignore: mockConfig.exclude,
+    });
+
+    expect(vscode.window.showQuickPick).toHaveBeenCalledTimes(1);
+    expect(vscode.window.showQuickPick).toHaveBeenCalledWith([
+      { label: mockConfig.baseFile, description: "original" },
+      { label: mockFile, description: "current" },
+    ]);
+
+    expect(mockWorkspaceState.baseFileCache.restore).toHaveBeenCalledTimes(1);
+    expect(mockWorkspaceState.baseFileCache.store).not.toHaveBeenCalled();
+    expect(fs.copyFileSync).not.toHaveBeenCalled();
+
+    expect(mockWorkspaceState.currentFile).toBe(mockConfig.baseFile);
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledTimes(1);
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
+      `${mockConfig.baseFile} now active in ${mockWorkspaceFolder.name}.`,
+    );
+  });
+
   it("throws a NonFatalExtensionError when no file item is selected", async () => {
     const workspaceFileSwap = setup(["file", mockConfig.baseFile]);
     await expect(workspaceFileSwap.swap()).rejects.toThrow(
