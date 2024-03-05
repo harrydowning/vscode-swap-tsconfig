@@ -8,7 +8,7 @@ const readFileSyncSpy = jest.spyOn(fs, "readFileSync");
 const writeFileSyncSpy = jest.spyOn(fs, "writeFileSync");
 
 describe("file-cache", () => {
-  const mockPath = "path";
+  const mockPath = "/path";
   const mockData = Buffer.from("data");
 
   it("correctly stores and restores a file that does exist", () => {
@@ -18,8 +18,9 @@ describe("file-cache", () => {
     const fileCache = new FileCache();
     fileCache.store(mockPath);
 
-    expect(writeFileSyncSpy).toHaveBeenCalledTimes(0);
+    expect(writeFileSyncSpy).not.toHaveBeenCalled();
     expect(existsSyncSpy).toHaveBeenCalledTimes(1);
+    expect(existsSyncSpy).toHaveBeenCalledWith(mockPath);
     expect(readFileSyncSpy).toHaveBeenCalledTimes(1);
     expect(readFileSyncSpy).toHaveBeenCalledWith(mockPath);
 
@@ -40,11 +41,12 @@ describe("file-cache", () => {
     fileCache.store(mockPath);
 
     expect(existsSyncSpy).toHaveBeenCalledTimes(1);
-    expect(readFileSyncSpy).toHaveBeenCalledTimes(0);
+    expect(existsSyncSpy).toHaveBeenCalledWith(mockPath);
+    expect(readFileSyncSpy).not.toHaveBeenCalled();
 
     fileCache.restore();
 
-    expect(writeFileSyncSpy).toHaveBeenCalledTimes(0);
+    expect(writeFileSyncSpy).not.toHaveBeenCalled();
   });
 
   it("correctly restores cached file when storing another file", () => {
@@ -54,7 +56,13 @@ describe("file-cache", () => {
     const fileCache = new FileCache();
     fileCache.store(mockPath);
 
-    const mockNewPath = "new path";
+    expect(writeFileSyncSpy).not.toHaveBeenCalled();
+    expect(existsSyncSpy).toHaveBeenCalledTimes(1);
+    expect(existsSyncSpy).toHaveBeenCalledWith(mockPath);
+    expect(readFileSyncSpy).toHaveBeenCalledTimes(1);
+    expect(readFileSyncSpy).toHaveBeenCalledWith(mockPath);
+
+    const mockNewPath = "/new/path";
     const mockNewData = Buffer.from("new data");
     existsSyncSpy.mockImplementationOnce(() => true);
     readFileSyncSpy.mockImplementationOnce(() => mockNewData);
@@ -64,6 +72,7 @@ describe("file-cache", () => {
     expect(writeFileSyncSpy).toHaveBeenCalledTimes(1);
     expect(writeFileSyncSpy).toHaveBeenCalledWith(mockPath, mockData);
     expect(existsSyncSpy).toHaveBeenCalledTimes(2);
+    expect(existsSyncSpy).toHaveBeenNthCalledWith(2, mockNewPath);
     expect(readFileSyncSpy).toHaveBeenCalledTimes(2);
     expect(readFileSyncSpy).toHaveBeenNthCalledWith(2, mockNewPath);
 
