@@ -18,7 +18,11 @@ const getMockWorkspacePath = (path: string) => {
 };
 
 describe("workspace-file-swap", () => {
-  const mockConfig = { baseFile: "baseFile", include: [], exclude: [] };
+  const mockConfig = {
+    baseFile: "baseFile",
+    include: ["*file"],
+    exclude: ["**/node_module/**"],
+  };
   const mockWorkspaceFolder = {
     name: "workspace",
     uri: { fsPath: mockWorkspacePath },
@@ -49,7 +53,7 @@ describe("workspace-file-swap", () => {
 
   it("correctly swaps the base file with the selected file", async () => {
     const [mockFile, mockSelectedFile] = ["file", "selectedFile"];
-    const mockFiles = [mockFile, mockConfig.baseFile, mockSelectedFile];
+    const mockFiles = [mockSelectedFile, mockFile, mockConfig.baseFile];
     const mockBaseFilePath = getMockWorkspacePath(mockConfig.baseFile);
     const mockSelectedFilePath = getMockWorkspacePath(mockSelectedFile);
 
@@ -57,9 +61,12 @@ describe("workspace-file-swap", () => {
     await workspaceFileSwap.swap();
 
     expect(glob.globSync).toHaveBeenCalledTimes(1);
-    expect(glob.globSync).toHaveBeenCalledWith(mockConfig.include, {
-      ignore: mockConfig.exclude,
-    });
+    expect(glob.globSync).toHaveBeenCalledWith(
+      mockConfig.include.map(getMockWorkspacePath),
+      {
+        ignore: mockConfig.exclude.map(getMockWorkspacePath),
+      },
+    );
 
     expect(vscode.window.showQuickPick).toHaveBeenCalledTimes(1);
     expect(vscode.window.showQuickPick).toHaveBeenCalledWith([
@@ -95,9 +102,12 @@ describe("workspace-file-swap", () => {
     await workspaceFileSwap.swap();
 
     expect(glob.globSync).toHaveBeenCalledTimes(1);
-    expect(glob.globSync).toHaveBeenCalledWith(mockConfig.include, {
-      ignore: mockConfig.exclude,
-    });
+    expect(glob.globSync).toHaveBeenCalledWith(
+      mockConfig.include.map(getMockWorkspacePath),
+      {
+        ignore: mockConfig.exclude.map(getMockWorkspacePath),
+      },
+    );
 
     expect(vscode.window.showQuickPick).toHaveBeenCalledTimes(1);
     expect(vscode.window.showQuickPick).toHaveBeenCalledWith([
