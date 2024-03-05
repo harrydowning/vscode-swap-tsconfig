@@ -54,6 +54,7 @@ describe("workspace-file-swap", () => {
   it("correctly swaps the base file with the selected file", async () => {
     const [mockFile, mockSelectedFile] = ["file", "selectedFile"];
     const mockFiles = [mockSelectedFile, mockFile, mockConfig.baseFile];
+
     const mockBaseFilePath = getMockWorkspacePath(mockConfig.baseFile);
     const mockSelectedFilePath = getMockWorkspacePath(mockSelectedFile);
 
@@ -80,6 +81,47 @@ describe("workspace-file-swap", () => {
     expect(mockWorkspaceState.baseFileCache.store).toHaveBeenCalledWith(
       mockBaseFilePath,
     );
+    expect(fs.copyFileSync).toHaveBeenCalledTimes(1);
+    expect(fs.copyFileSync).toHaveBeenCalledWith(
+      mockSelectedFilePath,
+      mockBaseFilePath,
+    );
+
+    expect(mockWorkspaceState.currentFile).toBe(mockSelectedFile);
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledTimes(1);
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
+      `${mockSelectedFile} now active in ${mockWorkspaceFolder.name}.`,
+    );
+  });
+
+  it("correctly swaps the current file with the selected file", async () => {
+    const [mockFile, mockSelectedFile] = ["file", "selectedFile"];
+    const mockFiles = [mockSelectedFile, mockFile, mockConfig.baseFile];
+    mockWorkspaceState.currentFile = mockFile;
+
+    const mockBaseFilePath = getMockWorkspacePath(mockConfig.baseFile);
+    const mockSelectedFilePath = getMockWorkspacePath(mockSelectedFile);
+
+    const workspaceFileSwap = setup(mockFiles, mockSelectedFile);
+    await workspaceFileSwap.swap();
+
+    expect(glob.globSync).toHaveBeenCalledTimes(1);
+    expect(glob.globSync).toHaveBeenCalledWith(
+      mockConfig.include.map(getMockWorkspacePath),
+      {
+        ignore: mockConfig.exclude.map(getMockWorkspacePath),
+      },
+    );
+
+    expect(vscode.window.showQuickPick).toHaveBeenCalledTimes(1);
+    expect(vscode.window.showQuickPick).toHaveBeenCalledWith([
+      { label: mockConfig.baseFile, description: "original" },
+      { label: mockFile, description: "current" },
+      { label: mockSelectedFile, description: "" },
+    ]);
+
+    expect(mockWorkspaceState.baseFileCache.restore).not.toHaveBeenCalled();
+    expect(mockWorkspaceState.baseFileCache.store).not.toHaveBeenCalled();
     expect(fs.copyFileSync).toHaveBeenCalledTimes(1);
     expect(fs.copyFileSync).toHaveBeenCalledWith(
       mockSelectedFilePath,
