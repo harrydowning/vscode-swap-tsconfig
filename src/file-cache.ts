@@ -11,7 +11,9 @@ export class FileCache {
   }
 
   store(path: string) {
+    this.restore();
     this.#clear();
+
     if (fs.existsSync(path)) {
       this.#path = path;
       this.#data = fs.readFileSync(path);
