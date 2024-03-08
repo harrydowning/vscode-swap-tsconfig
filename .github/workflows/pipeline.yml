@@ -16,7 +16,6 @@ jobs:
       - run: yarn format
       - run: yarn lint
       - run: yarn test
-      # TODO: check valid release
   release:
     runs-on: ubuntu-latest
     needs: check
