@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 import { FatalExtensionError, NonFatalExtensionError } from "./extension-error";
-import { commandWrapper, getNonNullable, getWorkspaceFolder } from "./utils";
+import {
+  commandWrapper,
+  getNonNullable,
+  getWorkspaceFolder,
+  logger,
+} from "./utils";
 
 describe("utils", () => {
   describe("commandWrapper", () => {
@@ -25,7 +30,6 @@ describe("utils", () => {
 
     it("should show a generic error message and log to console on any other Error", () => {
       const error = new Error();
-      const consoleErrorSpy = jest.spyOn(console, "error");
       commandWrapper(() => {
         throw error;
       })();
@@ -34,8 +38,9 @@ describe("utils", () => {
       expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
         "An error has occurred.",
       );
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-      expect(consoleErrorSpy).toHaveBeenCalledWith(error);
+      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenCalledWith(error);
+      expect(logger.show).toHaveBeenCalledTimes(1);
     });
   });
 
