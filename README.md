@@ -1,8 +1,8 @@
-<h1 style="text-align: center;">
+<h1 align="center">
   <img src="https://raw.githubusercontent.com/harrydowning/swap-tsconfig/main/assets/banner.png" alt="Swap Tsconfig">
 </h1>
 
-<div style="text-align: center;">
+<div align="center">
 
 ![GitHub License](https://img.shields.io/github/license/harrydowning/swap-tsconfig?style=for-the-badge)
 ![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/harrydowning.swap-tsconfig?style=for-the-badge)
