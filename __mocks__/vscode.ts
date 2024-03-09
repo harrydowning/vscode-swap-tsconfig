@@ -3,6 +3,10 @@ export const window = {
   showInformationMessage: jest.fn(),
   showWorkspaceFolderPick: jest.fn(),
   showQuickPick: jest.fn(),
+  createOutputChannel: jest.fn(() => ({
+    error: jest.fn(),
+    show: jest.fn(),
+  })),
 };
 
 export const workspace = {

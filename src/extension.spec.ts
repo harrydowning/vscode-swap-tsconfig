@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { activate, deactivate } from "./extension";
 import { FileSwap } from "./file-swap";
+import { logger } from "./utils";
 
 jest.mock("./file-swap");
 
@@ -18,7 +19,7 @@ describe("extension", () => {
       activate(mockContext);
 
       expect(vscode.commands.registerCommand).toHaveBeenCalledTimes(1);
-      expect(mockContext.subscriptions).toContain(mockDisposable);
+      expect(mockContext.subscriptions).toStrictEqual([mockDisposable, logger]);
 
       const registeredCommand = jest.mocked(vscode.commands.registerCommand)
         .mock.calls[0][1];

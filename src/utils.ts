@@ -5,6 +5,10 @@ import {
   NonFatalExtensionError,
 } from "./extension-error";
 
+export const logger = vscode.window.createOutputChannel("Swap Tsconfig", {
+  log: true,
+});
+
 export const commandWrapper = (command: () => Promise<void> | void) => {
   return async () => {
     try {
@@ -14,7 +18,8 @@ export const commandWrapper = (command: () => Promise<void> | void) => {
         vscode.window.showErrorMessage(error.message);
       } else if (error instanceof Error) {
         vscode.window.showErrorMessage("An error has occurred.");
-        console.error(error);
+        logger.error(error);
+        logger.show();
       }
     }
   };

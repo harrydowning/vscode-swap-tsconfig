@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { commandWrapper } from "./utils";
+import { commandWrapper, logger } from "./utils";
 import { FileSwap } from "./file-swap";
 
 const settings = vscode.workspace.getConfiguration("swap-tsconfig");
@@ -15,7 +15,7 @@ export const activate = (context: vscode.ExtensionContext) => {
     commandWrapper(async () => tsconfigFileSwap.swap()),
   );
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable, logger);
 };
 
 export const deactivate = () => {
