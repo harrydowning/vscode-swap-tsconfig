@@ -1,10 +1,15 @@
-<h1 style="text-align: center;">
+<h1 align="center">
   <img src="https://raw.githubusercontent.com/harrydowning/swap-tsconfig/main/assets/banner.png" alt="Swap Tsconfig">
 </h1>
 
-![GitHub License](https://img.shields.io/github/license/harrydowning/swap-tsconfig)
-![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/harrydowning.swap-tsconfig)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/harrydowning.swap-tsconfig)
+<div align="center">
+
+![GitHub License](https://img.shields.io/github/license/harrydowning/swap-tsconfig?style=for-the-badge)
+![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/harrydowning.swap-tsconfig?style=for-the-badge)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/harrydowning.swap-tsconfig?style=for-the-badge)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/harrydowning/swap-tsconfig/pipeline.yml?style=for-the-badge)
+
+</div>
 
 ## Overview
 
