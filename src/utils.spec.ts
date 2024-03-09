@@ -40,7 +40,7 @@ describe("utils", () => {
       );
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenCalledWith(error);
-      expect(logger.show).toHaveBeenCalled();
+      expect(logger.show).toHaveBeenCalledTimes(1);
     });
   });
 
