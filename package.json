@@ -10,10 +10,10 @@
     "typescript",
     "tsconfig"
   ],
-  "homepage": "https://github.com/harrydowning/swap-tsconfig#readme",
+  "homepage": "https://github.com/harrydowning/vscode-swap-tsconfig#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/harrydowning/swap-tsconfig.git"
+    "url": "https://github.com/harrydowning/vscode-swap-tsconfig.git"
   },
   "author": {
     "name": "Harry Downing",

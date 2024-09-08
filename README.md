@@ -28,7 +28,7 @@ Running the `swap-tsconfig` command will replace the content of the current `tsc
 
 ## Known Issues
 
-See [Issues](https://github.com/harrydowning/swap-tsconfig/issues)
+See [Issues](https://github.com/harrydowning/vscode-swap-tsconfig/issues)
 
 ## Release Notes
 
