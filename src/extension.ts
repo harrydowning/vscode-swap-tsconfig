@@ -10,10 +10,10 @@ const tsconfigFileSwap = new FileSwap({
 });
 
 export const activate = (context: vscode.ExtensionContext) => {
-  const disposable = vscode.commands.registerCommand(
-    "swap-tsconfig",
-    commandWrapper(async () => tsconfigFileSwap.swap()),
-  );
+  // const disposable = vscode.commands.registerCommand(
+  //   "swap-tsconfig",
+  //   commandWrapper(async () => tsconfigFileSwap.swap()),
+  // );
 
   context.subscriptions.push(disposable, logger);
 };
