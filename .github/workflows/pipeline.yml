@@ -13,14 +13,14 @@ jobs:
       repository-owner: harrydowning
       check-run: | # shell
         set -x
-        npm run i
+        npm i
         npm run sort -- --check
         npm run format
         npm run lint
         npm run test
       release-run: | # shell
         set -x
-        npm run i
+        npm i
         npm run package
         npx vsce package
         npm run release
