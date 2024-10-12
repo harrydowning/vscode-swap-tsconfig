@@ -25,3 +25,4 @@ jobs:
         npx vsce package
         npm run release
         npx vsce publish
+    secrets: inherit
